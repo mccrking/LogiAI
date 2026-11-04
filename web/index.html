@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>LogiAI</title>
+</head>
+<body>
+  <h1>Prédiction de retard</h1>
+  <label>Clé API <input id="cle" type="password"></label>
+  <button id="envoyer">Envoyer</button>
+  <pre id="resultat"></pre>
+  <script>
+    const API_URL = "http://localhost:8000/v1/predict";
+    const livraison = {
+      distance_km: 120, poids_kg: 450, heure_depart: 17,
+      pluie_mm: 8, trafic_index: 7.5, nb_arrets: 4,
+      type_vehicule: "camion"
+    };
+    const bouton = document.querySelector("#envoyer");
+    const resultat = document.querySelector("#resultat");
+
+    async function appelerApi() {
+      const cle = document.querySelector("#cle").value;
+      const reponse = await fetch(API_URL, {
+        method: "POST",
+        headers: {"Content-Type": "application/json", "X-API-Key": cle},
+        body: JSON.stringify(livraison)
+      });
+      const corps = await reponse.json();
+      return {status: reponse.status, corps};
+    }
+
+    bouton.addEventListener("click", async () => {
+      bouton.disabled = true;
+      resultat.textContent = "Appel en cours...";
+      try {
+        const {status, corps} = await appelerApi();
+        if (status === 422) {
+          resultat.textContent = "Données invalides : " + JSON.stringify(corps.detail);
+        } else if (status === 401) {
+          resultat.textContent = "Clé API absente ou invalide.";
+        } else if (status >= 400) {
+          resultat.textContent = "Erreur API (" + status + ").";
+        } else {
+          resultat.textContent = "Probabilité de retard : "
+            + corps.probabilite_retard + "\nAlerte : " + corps.alerte;
+        }
+      } catch (error) {
+        resultat.textContent = "API injoignable.";
+      } finally {
+        bouton.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
