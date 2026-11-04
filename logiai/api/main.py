@@ -3,10 +3,11 @@ from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 
 from logiai.api.schemas import Livraison, PredictionOut
 from logiai.api.security import require_admin, verify_api_key
-from logiai.config import ALLOWED_ORIGINS, MODEL_PATH
+from logiai.config import ALLOWED_ORIGINS, MODEL_PATH, ROOT
 from logiai.predict import Predictor
 
 state: dict = {}  # contient le "predictor" une fois le modèle chargé
@@ -38,6 +39,11 @@ app.add_middleware(
 @app.get("/health")
 def health():
     return {"status": "ok", "model_loaded": "predictor" in state}
+
+
+@app.get("/", include_in_schema=False)
+def index():
+    return FileResponse(ROOT / "web" / "index.html")
 
 
 @app.post("/v1/predict", response_model=PredictionOut, dependencies=[Depends(verify_api_key)])

@@ -6,7 +6,8 @@
 - Le starter a été complété dans un environnement virtuel Python.
 - Les tests de validation retournent 422 grâce à Pydantic, avant l'implémentation
   de la prédiction.
-- Après l'implémentation, la suite complète passe : **52 passed**.
+- Après finalisation, la suite complète passe : **55 passed**.
+- Les tests entraînent un modèle temporaire et sont autonomes après clonage.
 
 ## 2. Mon schéma
 - Les bornes sont contrôlées par les champs `Field` de `logiai/api/schemas.py`.
@@ -48,9 +49,15 @@ LogiAI répond 503 : l'API reste joignable pour la supervision, mais aucune
 prédiction n'est servie tant que le modèle n'est pas disponible.
 
 ## 7. Client web et CORS
-- `web/index.html` appelle l'API en POST avec `Content-Type` et `X-API-Key`.
+- `web/index.html` propose un formulaire pour les sept variables et appelle
+  l'API en POST avec `Content-Type` et `X-API-Key`.
+- L'interface est aussi disponible directement sur `http://localhost:8000`.
 - Seule l'origine `http://localhost:5500` est autorisée.
 - Le port 5501 est refusé par le navigateur, tandis que curl fonctionne car CORS
   est un contrôle du navigateur et non une authentification serveur.
 
-## 8. Lien de la pull request
+## 8. Livraison du projet
+
+- Dépôt : https://github.com/Ilyasjr3654/LogiAI
+- Installation et utilisation documentées dans `README.md`.
+- Vérification automatique sur GitHub Actions avec Python 3.11 et 3.12.

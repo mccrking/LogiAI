@@ -11,6 +11,12 @@ def test_predict_fausse_cle_renvoie_401(client):
     ).status_code == 401
 
 
+def test_cle_non_ascii_refusee(client):
+    assert client.post(
+        "/v1/predict", json=VALID, headers={"X-API-Key": b"cl\xc3\xa9-invalide"}
+    ).status_code == 401
+
+
 def test_predict_cle_utilisateur_renvoie_200(client, headers_user):
     assert client.post(
         "/v1/predict", json=VALID, headers=headers_user

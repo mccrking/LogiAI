@@ -1,56 +1,94 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <title>LogiAI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LogiAI — Risque de retard</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, sans-serif; color: #172f39; background: #eef3f4; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 32px 16px; }
+    main { max-width: 850px; margin: auto; }
+    header { margin-bottom: 28px; }
+    h1 { margin-bottom: 8px; }
+    p { line-height: 1.6; }
+    form, section { background: white; padding: 24px; border-radius: 16px; margin: 20px 0; box-shadow: 0 6px 24px #172f3909; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 18px; }
+    label { display: grid; gap: 8px; font-weight: 600; }
+    input, select, button { font: inherit; padding: 12px; border-radius: 8px; border: 1px solid #a6b8bd; width: 100%; }
+    input:focus, select:focus, button:focus { outline: 3px solid #69c9bf; outline-offset: 2px; }
+    .key { margin: 24px 0; }
+    button { border: 0; background: #12665e; color: white; font-weight: 700; cursor: pointer; }
+    button:disabled { opacity: .6; cursor: wait; }
+    #resultat { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; line-height: 1.7; }
+    .muted { color: #526b75; font-size: .9rem; }
+    a { color: #12665e; }
+  </style>
 </head>
 <body>
-  <h1>Prédiction de retard</h1>
-  <label>Clé API <input id="cle" type="password"></label>
-  <button id="envoyer">Envoyer</button>
-  <pre id="resultat"></pre>
-  <script>
-    const API_URL = "http://localhost:8000/v1/predict";
-    const livraison = {
-      distance_km: 120, poids_kg: 450, heure_depart: 17,
-      pluie_mm: 8, trafic_index: 7.5, nb_arrets: 4,
-      type_vehicule: "camion"
-    };
-    const bouton = document.querySelector("#envoyer");
-    const resultat = document.querySelector("#resultat");
-
-    async function appelerApi() {
-      const cle = document.querySelector("#cle").value;
-      const reponse = await fetch(API_URL, {
-        method: "POST",
-        headers: {"Content-Type": "application/json", "X-API-Key": cle},
-        body: JSON.stringify(livraison)
+<main>
+  <header>
+    <p class="muted">LOGIAI · AIDE À LA PLANIFICATION</p>
+    <h1>Anticiper les retards de livraison</h1>
+    <p>Renseignez le trajet pour estimer son risque de retard.</p>
+  </header>
+  <form id="livraison">
+    <div class="grid">
+      <label>Distance (km)<input name="distance_km" type="number" min="1" max="1000" step="any" value="120" required></label>
+      <label>Poids (kg)<input name="poids_kg" type="number" min="0.1" max="5000" step="any" value="450" required></label>
+      <label>Heure de départ (0–23)<input name="heure_depart" type="number" min="0" max="23" step="1" value="17" required></label>
+      <label>Pluie (mm)<input name="pluie_mm" type="number" min="0" max="100" step="any" value="8" required></label>
+      <label>Trafic (0–10)<input name="trafic_index" type="number" min="0" max="10" step="any" value="7.5" required></label>
+      <label>Nombre d'arrêts<input name="nb_arrets" type="number" min="0" max="50" step="1" value="4" required></label>
+      <label>Véhicule<select name="type_vehicule"><option value="moto">Moto</option><option value="fourgon">Fourgon</option><option value="camion" selected>Camion</option></select></label>
+    </div>
+    <label class="key">Clé API<input id="cle" type="password" autocomplete="off" required placeholder="Clé utilisateur ou administrateur"></label>
+    <button id="envoyer" type="submit">Évaluer le risque</button>
+    <p class="muted">La clé reste en mémoire le temps de la saisie et n'est pas enregistrée par cette page.</p>
+  </form>
+  <section aria-label="Résultat" aria-live="polite" aria-atomic="true">
+    <p id="resultat">Le résultat de votre estimation apparaîtra ici.</p>
+  </section>
+  <p class="muted">Démonstration entraînée sur des données synthétiques. Les probabilités ne constituent pas une garantie opérationnelle. <a id="docs" href="/docs">Documentation API</a></p>
+</main>
+<script>
+  const API_BASE = ['8000', ''].includes(location.port) && location.protocol !== 'file:'
+    ? location.origin : 'http://localhost:8000';
+  document.querySelector('#docs').href = API_BASE + '/docs';
+  const formulaire = document.querySelector('#livraison');
+  const bouton = document.querySelector('#envoyer');
+  const resultat = document.querySelector('#resultat');
+  formulaire.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const livraison = Object.fromEntries(new FormData(formulaire));
+    for (const champ of Object.keys(livraison)) {
+      if (champ !== 'type_vehicule') livraison[champ] = Number(livraison[champ]);
+    }
+    bouton.disabled = true;
+    resultat.textContent = 'Calcul en cours…';
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    try {
+      const reponse = await fetch(API_BASE + '/v1/predict', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-API-Key': document.querySelector('#cle').value},
+        body: JSON.stringify(livraison), signal: controller.signal
       });
       const corps = await reponse.json();
-      return {status: reponse.status, corps};
+      if (reponse.status === 401) resultat.textContent = 'Clé API absente ou invalide.';
+      else if (reponse.status === 422) resultat.textContent = 'Données invalides : ' + JSON.stringify(corps.detail);
+      else if (reponse.status === 503) resultat.textContent = 'Modèle indisponible. Générez les données puis entraînez le modèle et redémarrez l’API.';
+      else if (!reponse.ok) resultat.textContent = 'Erreur API (' + reponse.status + ').';
+      else resultat.textContent = 'Probabilité de retard : ' + (corps.probabilite_retard * 100).toLocaleString('fr-FR', {maximumFractionDigits: 2})
+        + ' %\n' + (corps.alerte ? 'Alerte : risque de retard élevé.' : 'Risque sous le seuil d’alerte.')
+        + '\nSeuil : ' + (corps.seuil * 100) + ' % · Modèle ' + corps.model_version;
+    } catch (error) {
+      resultat.textContent = error.name === 'AbortError' ? 'Délai dépassé. Réessayez.' : 'API injoignable. Vérifiez son démarrage et l’origine autorisée (localhost:5500 pour le client séparé).';
+    } finally {
+      clearTimeout(timeout);
+      bouton.disabled = false;
     }
-
-    bouton.addEventListener("click", async () => {
-      bouton.disabled = true;
-      resultat.textContent = "Appel en cours...";
-      try {
-        const {status, corps} = await appelerApi();
-        if (status === 422) {
-          resultat.textContent = "Données invalides : " + JSON.stringify(corps.detail);
-        } else if (status === 401) {
-          resultat.textContent = "Clé API absente ou invalide.";
-        } else if (status >= 400) {
-          resultat.textContent = "Erreur API (" + status + ").";
-        } else {
-          resultat.textContent = "Probabilité de retard : "
-            + corps.probabilite_retard + "\nAlerte : " + corps.alerte;
-        }
-      } catch (error) {
-        resultat.textContent = "API injoignable.";
-      } finally {
-        bouton.disabled = false;
-      }
-    });
-  </script>
+  });
+</script>
 </body>
 </html>

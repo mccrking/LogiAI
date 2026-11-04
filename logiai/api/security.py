@@ -7,7 +7,10 @@ from logiai import config
 
 
 def _egal(received: str | None, expected: str | None) -> bool:
-    return bool(received and expected and secrets.compare_digest(received, expected))
+    return bool(
+        received and expected
+        and secrets.compare_digest(received.encode("utf-8"), expected.encode("utf-8"))
+    )
 
 
 def verify_api_key(x_api_key: str | None = Header(default=None)) -> str:
