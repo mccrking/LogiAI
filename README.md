@@ -1,4 +1,4 @@
-﻿# LogiAI
+# LogiAI
 
 Application pédagogique de prédiction du risque de retard de livraison : modèle de régression logistique, API FastAPI sécurisée et formulaire web en français. Le modèle utilise des données synthétiques ; il doit être évalué sur des données réelles avant tout usage opérationnel.
 
@@ -7,7 +7,7 @@ Application pédagogique de prédiction du risque de retard de livraison : modè
 Prérequis : Python 3.11 ou 3.12 et Git.
 
 ```sh
-git clone https://github.com/Ilyasjr3654/LogiAI.git
+git clone https://github.com/mccrking/LogiAI.git
 cd LogiAI
 python -m venv .venv
 ```

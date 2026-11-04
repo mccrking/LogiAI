@@ -58,6 +58,6 @@ prédiction n'est servie tant que le modèle n'est pas disponible.
 
 ## 8. Livraison du projet
 
-- Dépôt : https://github.com/Ilyasjr3654/LogiAI
+- Dépôt : https://github.com/mccrking/LogiAI
 - Installation et utilisation documentées dans `README.md`.
 - Vérification automatique sur GitHub Actions avec Python 3.11 et 3.12.
