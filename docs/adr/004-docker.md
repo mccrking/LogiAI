@@ -38,6 +38,12 @@ Compose publie `127.0.0.1:8080:80` pour la page et
 du sujet et évite le port 8000 utilisé pendant l’atelier 4. La publication est
 limitée à la machine locale ; le réseau interne joint toujours `api:8000`.
 
+Pour une présentation sur le réseau local, `LOGIAI_WEB_BIND=0.0.0.0` dans le
+`.env` local ouvre uniquement la publication du service web à toutes les
+interfaces. La valeur par défaut reste `127.0.0.1`, et le port API 8001 reste
+limité au PC. Le pare-feu et l’isolation éventuelle du Wi-Fi conditionnent
+l’accès depuis une autre machine ; cette option ne crée pas d’accès Internet.
+
 Le port 8001 permet de contourner Nginx, mais pas la vérification de clé de
 FastAPI. Il faudrait reproduire les éventuelles protections de Nginx sur ce
 chemin direct. Ne publier que 8080 réduirait les points d’entrée ; cela ferait

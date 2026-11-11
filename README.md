@@ -48,6 +48,15 @@ Les ports sont liés à `127.0.0.1` : ils sont accessibles depuis cette machine.
 Compose attend que l’API réponde avec un modèle chargé avant de lancer Nginx.
 Les clés sont injectées à l’exécution avec `env_file`, jamais intégrées à l’image.
 
+### Accès depuis le réseau local
+
+Pour présenter la page à une autre machine du même réseau, ajouter
+`LOGIAI_WEB_BIND=0.0.0.0` dans le `.env` local puis exécuter
+`docker compose up -d --wait`. Utiliser alors `http://IP-DU-PC:8080`.
+Le pare-feu doit autoriser le TCP 8080 depuis le sous-réseau local. L’API directe
+sur 8001 reste limitée au PC ; le navigateur distant passe par Nginx et utilise
+la clé utilisateur. Cette option ne publie pas le site sur Internet.
+
 ## Préparation sous Linux ou macOS
 
 Créer `.env` à partir de `.env.example` et y configurer les clés, puis :

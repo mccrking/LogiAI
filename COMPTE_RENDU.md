@@ -320,7 +320,7 @@ services:
       dockerfile: web/Dockerfile
     container_name: logiai-web
     ports:
-      - "127.0.0.1:8080:80"
+      - "${LOGIAI_WEB_BIND:-127.0.0.1}:8080:80"
     depends_on:
       api:
         condition: service_healthy
