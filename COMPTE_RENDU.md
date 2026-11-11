@@ -196,6 +196,12 @@ Le code, les configurations, les preuves et la documentation sont préparés sur
 `atelier5`. La relecture attendue par Ismail Haddaoui doit utiliser un nouveau
 clone et son propre `.env`, avec commentaire et approbation réels.
 
+Pull request : https://github.com/mccrking/LogiAI/pull/1
+
+Le chemin temporaire pytest a été corrigé pour ne pas dépendre de l’existence
+préalable de `.pytest_cache`, absente d’un nouveau clone. Les workflows vérifient
+les tests Python et les appels de la pile Docker sur un runner Linux propre.
+
 Après relecture, fusionner avec « Create a merge commit », puis créer le tag
 `tp5` sur le commit fusionné. Le résumé du sujet mentionne aussi `atelier5` : ce
 nom est utilisé pour la branche et `tp5` pour le tag final prévu dans les
