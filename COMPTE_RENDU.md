@@ -132,8 +132,8 @@ réseau a expiré avant de signaler le refus. La page traite ces deux cas :
 Le code réel remplace « code reçu » dans le message affiché.
 
 Le redémarrage utilise `docker compose start --wait api` pour attendre que le
-modèle soit chargé avant de réessayer. Le contrôle de reprise vérifie ensuite
-le retour à **200** et l’affichage de la probabilité.
+modèle soit chargé avant de réessayer. Le contrôle de reprise a confirmé
+le retour à **200**, l’affichage de la probabilité et l’absence d’exception JavaScript.
 
 ![Message de panne avec clé masquée](docs/evidence/atelier5-api-arretee.png)
 
@@ -175,6 +175,26 @@ l’API pour le recharger en mémoire. Le code `logiai/`, copié et non monté, 
 une reconstruction. L’[ADR 004](docs/adr/004-docker.md) justifie COPY avec volumes
 et les ports 8080/8001, publiés uniquement sur la machine locale.
 
+### Présentation sur le réseau local
+
+Pour permettre à l’enseignante d’ouvrir le site depuis une autre machine du
+même réseau, la publication du service web est devenue configurable :
+`${LOGIAI_WEB_BIND:-127.0.0.1}:8080:80`. Par défaut, l’accès reste limité au PC.
+Pour la présentation, `LOGIAI_WEB_BIND=0.0.0.0` a été ajouté au `.env` local,
+puis les conteneurs ont été recréés avec `docker compose up -d --wait`.
+
+L’adresse Wi-Fi relevée lors des essais est **10.40.15.50**. L’adresse à saisir
+est **http://10.40.15.50:8080**. La page, la santé et une prédiction ont été
+vérifiées depuis le PC hôte via cette adresse. L’accès depuis le poste de
+l’enseignante reste à confirmer sur place : il dépend du pare-feu et d’une
+éventuelle isolation des clients Wi-Fi.
+
+La règle existante « Docker Desktop Backend » autorise Docker sur le profil
+réseau actif ; aucune règle de pare-feu n’a été ajoutée. Le port 8001 reste lié
+à `127.0.0.1`, tandis que le navigateur distant utilise Nginx et une clé
+utilisateur. La machine et Docker doivent rester allumés. Cette adresse privée
+ne permet pas un accès depuis Internet et peut changer au prochain réseau.
+
 ## 9. Cinq questions de compréhension
 
 1. **Image et conteneur : quelle différence ?** L’image contient les couches du
@@ -205,7 +225,7 @@ les tests Python et les appels de la pile Docker sur un runner Linux propre.
 Après relecture, fusionner avec « Create a merge commit », puis créer le tag
 `tp5` sur le commit fusionné. Le résumé du sujet mentionne aussi `atelier5` : ce
 nom est utilisé pour la branche et `tp5` pour le tag final prévu dans les
-commandes de remise. Aucune approbation n’est attribuée artificiellement au binôme.
+commandes de remise. La pull request reste ouverte en attente de cette relecture.
 
 Les [tickets de sortie proposés](docs/TICKETS_SORTIE.md) sont à relire puis à
 transcrire individuellement sur papier. La réponse personnelle doit être

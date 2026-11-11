@@ -154,6 +154,7 @@ service web pour que Nginx résolve à nouveau le nom `api`.
 ## Livrables
 
 - [Compte rendu de l’atelier 5](COMPTE_RENDU.md).
+- [Compte rendu de l’atelier 5 au format PDF](docs/Compte_rendu_Atelier_5_LogiAI.pdf).
 - [Décisions Docker](docs/adr/004-docker.md).
 - [Propositions de tickets de sortie](docs/TICKETS_SORTIE.md).
 - [Compte rendu conservé de l’atelier 4](docs/COMPTE_RENDU_ATELIER4.md).
