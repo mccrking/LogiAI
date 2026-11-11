@@ -4,10 +4,13 @@ from logiai.api import main
 from tests.conftest import VALID
 
 
-def test_interface_web(client):
-    response = client.get("/")
+def test_accueil_et_documentation(client):
+    redirect = client.get("/", follow_redirects=False)
+    assert redirect.status_code == 307
+    assert redirect.headers["location"] == "/docs"
+    response = client.get("/docs")
     assert response.status_code == 200
-    assert 'id="livraison"' in response.text
+    assert "./openapi.json" in response.text
     assert "text/html" in response.headers["content-type"]
 
 

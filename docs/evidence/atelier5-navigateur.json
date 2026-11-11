@@ -1,0 +1,22 @@
+{
+  "success": "Probabilité de retard : 73,2 %\nAlerte : risque de retard élevé.\nSeuil : 40 % · Modèle 1.0",
+  "failure": "API indisponible derrière Nginx (504). Réessayez après son redémarrage.",
+  "failure_status": 504,
+  "requests": [
+    {
+      "method": "POST",
+      "url": "http://localhost:8080/api/v1/predict"
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:8080/api/v1/predict"
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:8080/api/v1/predict"
+    }
+  ],
+  "options": 0,
+  "javascript_errors": [],
+  "recovery_status": 200
+}

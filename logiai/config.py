@@ -4,9 +4,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv()
-
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(os.getenv("LOGIAI_HOME", Path(__file__).resolve().parent.parent)).resolve()
+load_dotenv(ROOT / ".env")
 DATA_PATH = ROOT / "data" / "livraisons.csv"
 MODEL_PATH = ROOT / "models" / "model.joblib"
 INFO_PATH = ROOT / "models" / "model_info.json"
@@ -21,4 +20,5 @@ SEED = 42
 
 API_KEY = os.getenv("LOGIAI_API_KEY")
 ADMIN_KEY = os.getenv("LOGIAI_ADMIN_KEY")
+ROOT_PATH = os.getenv("LOGIAI_ROOT_PATH", "")
 ALLOWED_ORIGINS = ["http://localhost:5500"]

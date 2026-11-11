@@ -1,0 +1,46 @@
+{
+  "normal": {
+    "health": [
+      200,
+      {
+        "status": "ok",
+        "model_loaded": true
+      }
+    ],
+    "sans_cle": 401,
+    "bonne_cle": [
+      200,
+      {
+        "probabilite_retard": 0.732,
+        "alerte": true,
+        "seuil": 0.4,
+        "model_version": "1.0"
+      }
+    ]
+  },
+  "sans_env": {
+    "health": [
+      200,
+      {
+        "status": "ok",
+        "model_loaded": true
+      }
+    ],
+    "prediction": 401
+  },
+  "sans_port": {
+    "health_interne": {
+      "status": "ok",
+      "model_loaded": true
+    },
+    "externe": "URLError",
+    "ports": ""
+  },
+  "loopback": {
+    "health_interne": {
+      "status": "ok",
+      "model_loaded": true
+    },
+    "externe": "RemoteDisconnected"
+  }
+}
