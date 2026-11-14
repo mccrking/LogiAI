@@ -10,6 +10,8 @@
 
 **Date des essais :** 11 novembre 2026
 
+**Complément illustré :** 14 novembre 2026
+
 **Branche :** `atelier5` — dépôt `mccrking/LogiAI`
 
 ## 1. Objectif et premier constat
@@ -234,6 +236,40 @@ confirmée par chaque étudiant.
 Cette démonstration ne fournit pas HTTPS, rotation automatique des clés,
 limitation de débit, supervision durable ou haute disponibilité. Le modèle
 synthétique doit être validé sur des livraisons réelles avant un usage opérationnel.
+
+## 11. Captures de Docker Desktop
+
+Les trois captures suivantes, fournies le 14 novembre 2026, montrent les
+conteneurs et les images du projet dans Docker Desktop. Elles complètent les
+essais du 11 novembre ; les consommations et les identifiants sont ceux de
+l’instant de la capture.
+
+### Conteneurs en cours d’exécution
+
+Le groupe Compose `atelier4` contient `logiai-web` et `logiai-api`, tous deux
+signalés en cours d’exécution par un indicateur vert. Le serveur web utilise
+l’image `logiai-web:1.0` et publie `8080:80`. L’API utilise `logiai:1.0` et publie
+`8001:8000`. Le nom du groupe provient du dossier du projet conservé depuis
+l’atelier 4 ; il ne change pas le contenu de l’atelier 5.
+
+![Docker Desktop - conteneurs logiai-web et logiai-api en cours d’exécution](docs/evidence/atelier5-docker-containers.png)
+
+### Image de l’API
+
+La vue de l’image `logiai:1.0` indique « IN USE » et **20 couches**. Le début de
+l’historique montre notamment la base Debian, Python **3.12.16** et le répertoire
+de travail `/app`. L’image est donc distincte du conteneur qui l’exécute.
+
+![Docker Desktop - image logiai:1.0 et début de l’historique des couches](docs/evidence/atelier5-docker-image-api.png)
+
+### Image du serveur web
+
+L’image `logiai-web:1.0` est également indiquée « IN USE ». La vue affiche
+**23 couches** et le début de l’historique avec Alpine Linux, Nginx **1.31.8**
+et les scripts d’entrée de l’image Nginx. Cette image sert la page statique et
+le proxy vers FastAPI.
+
+![Docker Desktop - image logiai-web:1.0 et début de l’historique des couches](docs/evidence/atelier5-docker-image-web.png)
 
 ## Annexe — Configurations finales
 
