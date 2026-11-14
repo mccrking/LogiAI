@@ -1,0 +1,28 @@
+name: Docker
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: python -m pip install -r requirements-runtime.txt
+      - name: Préparer les artefacts et les clés de test
+        run: |
+          python -m logiai.dataset
+          python -m logiai.train
+          python -c "from pathlib import Path; Path('.env').write_text('LOGIAI_API_KEY=ci-user-only\nLOGIAI_ADMIN_KEY=ci-admin-only\n')"
+      - run: docker compose config --quiet
+      - run: docker compose up -d --build --wait --wait-timeout 120
+      - run: python scripts/smoke_docker.py
+      - name: Journaux
+        if: always()
+        run: docker compose logs --tail=50
+      - name: Arrêter la pile
+        if: always()
+        run: docker compose down

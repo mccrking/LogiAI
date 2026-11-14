@@ -49,12 +49,10 @@
   <section aria-label="Résultat" aria-live="polite" aria-atomic="true">
     <p id="resultat">Le résultat de votre estimation apparaîtra ici.</p>
   </section>
-  <p class="muted">Démonstration entraînée sur des données synthétiques. Les probabilités ne constituent pas une garantie opérationnelle. <a id="docs" href="/docs">Documentation API</a></p>
+  <p class="muted">Démonstration entraînée sur des données synthétiques. Les probabilités ne constituent pas une garantie opérationnelle. <a id="docs" href="/api/docs">Documentation API</a></p>
 </main>
 <script>
-  const API_BASE = ['8000', ''].includes(location.port) && location.protocol !== 'file:'
-    ? location.origin : 'http://localhost:8000';
-  document.querySelector('#docs').href = API_BASE + '/docs';
+  const API_URL = '/api/v1/predict';
   const formulaire = document.querySelector('#livraison');
   const bouton = document.querySelector('#envoyer');
   const resultat = document.querySelector('#resultat');
@@ -69,11 +67,15 @@
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 15000);
     try {
-      const reponse = await fetch(API_BASE + '/v1/predict', {
+      const reponse = await fetch(API_URL, {
         method: 'POST',
         headers: {'Content-Type': 'application/json', 'X-API-Key': document.querySelector('#cle').value},
         body: JSON.stringify(livraison), signal: controller.signal
       });
+      if (reponse.status === 502 || reponse.status === 504) {
+        resultat.textContent = 'API indisponible derrière Nginx (' + reponse.status + '). Réessayez après son redémarrage.';
+        return;
+      }
       const corps = await reponse.json();
       if (reponse.status === 401) resultat.textContent = 'Clé API absente ou invalide.';
       else if (reponse.status === 422) resultat.textContent = 'Données invalides : ' + JSON.stringify(corps.detail);
@@ -83,7 +85,7 @@
         + ' %\n' + (corps.alerte ? 'Alerte : risque de retard élevé.' : 'Risque sous le seuil d’alerte.')
         + '\nSeuil : ' + (corps.seuil * 100) + ' % · Modèle ' + corps.model_version;
     } catch (error) {
-      resultat.textContent = error.name === 'AbortError' ? 'Délai dépassé. Réessayez.' : 'API injoignable. Vérifiez son démarrage et l’origine autorisée (localhost:5500 pour le client séparé).';
+      resultat.textContent = error.name === 'AbortError' ? 'Délai dépassé. Réessayez.' : 'Service injoignable. Vérifiez le démarrage des conteneurs avec Docker Compose.';
     } finally {
       clearTimeout(timeout);
       bouton.disabled = false;

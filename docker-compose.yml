@@ -1,0 +1,39 @@
+services:
+  api:
+    image: logiai:1.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: logiai-api
+    ports:
+      - "127.0.0.1:8001:8000"
+    env_file:
+      - .env
+    environment:
+      LOGIAI_HOME: /app
+      LOGIAI_ROOT_PATH: /api
+    volumes:
+      - ./models:/app/models:ro
+      - ./data:/app/data:ro
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import json, urllib.request; r = json.load(urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)); assert r['status'] == 'ok' and r['model_loaded']"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  web:
+    image: logiai-web:1.0
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    container_name: logiai-web
+    ports:
+      - "${LOGIAI_WEB_BIND:-127.0.0.1}:8080:80"
+    depends_on:
+      api:
+        condition: service_healthy
