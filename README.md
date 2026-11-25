@@ -31,7 +31,8 @@ comme estimation opérationnelle.
 Docker installe désormais le package dans `site-packages`, sans conserver
 `/app/logiai`. La préparation et l’orchestration ci-dessous restent applicables.
 Voir [ADR 005](docs/adr/005-packaging.md), [l’étude de conception](docs/etude-de-conception.md)
-et [le compte rendu de l’atelier 6](COMPTE_RENDU.md).
+Le compte rendu de l’atelier 6 est livré séparément en PDF dans le dossier
+local `livrables` et n’est pas publié dans ce dépôt.
 
 ## Pile Docker héritée de l’atelier 5
 
