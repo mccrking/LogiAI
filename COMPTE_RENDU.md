@@ -89,6 +89,8 @@ Le cas pluie_mm = 500 a bien ete refuse avec 422 par l'API reconstruite.
 
 ## 6. Conception et remise
 
+Pull request : https://github.com/mccrking/LogiAI/pull/2
+
 L'ADR 005 justifie les bornes >= du package et les versions == du deploiement,
 ainsi que le choix d'un modèle externe. L'etude de conception contient les neuf
 rubriques demandees ; seule architecture est rédigée, avec un schema Mermaid.
