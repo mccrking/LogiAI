@@ -1,7 +1,3 @@
-# Compte rendu : TP sécurité LogiAI
-
-**Noms :** ............................  **Groupe :** ........
-
 ## 1. Environnement et premiers tests
 - Le starter a été complété dans un environnement virtuel Python.
 - Les tests de validation retournent 422 grâce à Pydantic, avant l'implémentation
