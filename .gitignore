@@ -7,8 +7,12 @@ __pycache__/
 .env.*
 !.env.example
 data/*.csv
-models/
-dist/
+models/*
+!models/model.joblib
+!models/model_info.json
+dist/*
+!dist/logiai-0.1.0-py3-none-any.whl
 build/
 *.egg-info/
 .venv_test/
+.venv_ami/
