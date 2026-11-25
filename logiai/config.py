@@ -4,7 +4,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-ROOT = Path(os.getenv("LOGIAI_HOME", Path(__file__).resolve().parent.parent)).resolve()
+ROOT = Path(os.getenv("LOGIAI_HOME", Path.cwd())).resolve()
 load_dotenv(ROOT / ".env")
 DATA_PATH = ROOT / "data" / "livraisons.csv"
 MODEL_PATH = ROOT / "models" / "model.joblib"

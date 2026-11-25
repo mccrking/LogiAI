@@ -9,7 +9,9 @@ COPY requirements-runtime.txt ./
 RUN pip install --no-cache-dir -r requirements-runtime.txt \
     && useradd --uid 10001 --create-home logiai
 
-COPY logiai/ ./logiai/
+COPY pyproject.toml /tmp/build/
+COPY logiai/ /tmp/build/logiai/
+RUN pip install --no-cache-dir --no-deps /tmp/build && rm -rf /tmp/build
 
 # Étape facultative pour préparer les artefacts sans Python installé sur l'hôte.
 FROM base AS trainer

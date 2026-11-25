@@ -20,6 +20,8 @@ jobs:
       - run: docker compose config --quiet
       - run: docker compose up -d --build --wait --wait-timeout 120
       - run: python scripts/smoke_docker.py
+      - name: Vérifier l'installation du package dans l'image
+        run: docker compose exec -T api python -c "import logiai; from pathlib import Path; print(logiai.__file__); assert 'site-packages' in logiai.__file__; assert not Path('/app/logiai').exists(); assert not Path('/tmp/build').exists()"
       - name: Journaux
         if: always()
         run: docker compose logs --tail=50

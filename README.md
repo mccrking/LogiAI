@@ -1,4 +1,58 @@
-# LogiAI — Atelier 5
+# LogiAI — Atelier 6
+
+## Package Python et commande
+
+### Tester le wheel fourni dans le dépôt
+
+Le wheel `dist/logiai-0.1.0-py3-none-any.whl` et les deux fichiers du modèle
+de démonstration sont inclus pour un essai direct sur la branche `tp6`.
+Depuis le dossier du dépôt, sous PowerShell :
+
+```powershell
+python -m venv .venv_ami
+.venv_ami\Scripts\python.exe -m pip install -c requirements-runtime.txt dist/logiai-0.1.0-py3-none-any.whl
+$env:LOGIAI_HOME = (Get-Location).Path
+.venv_ami\Scripts\logiai-predict.exe livraison.json
+```
+
+Résultat attendu : **73 % (ALERTE)**. Ce test du CLI ne nécessite pas de clé API.
+Le modèle reste externe au wheel, dans `models/`, avec `model_info.json`.
+
+### Développer et reconstruire le package
+
+Depuis la branche `tp6`, avec Python 3.12 pour reproduire l’environnement du modèle :
+
+```powershell
+python -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+.venv\Scripts\python.exe -m pip install -e ".[api,dev]"
+.venv\Scripts\python.exe -m pytest -q
+.venv\Scripts\python.exe -m build
+.venv\Scripts\logiai-predict.exe livraison.json
+```
+
+`dist/logiai-0.1.0-py3-none-any.whl` contient le code et la commande, sans modèle,
+données ni secrets. Pour l’installer ailleurs, utiliser un environnement neuf :
+
+```powershell
+python -m pip install -c CHEMIN/requirements-runtime.txt CHEMIN/dist/logiai-0.1.0-py3-none-any.whl
+$env:LOGIAI_HOME = 'CHEMIN/DU/PROJET'
+logiai-predict CHEMIN/DU/PROJET/livraison.json
+```
+
+La variable désigne le dossier contenant `models/` et `data/`. Sans variable,
+le dossier courant est utilisé. Le CLI appelle le modèle directement et ne
+contrôle pas les bornes métier de l’API : une pluie de 500 mm illustre cette
+différence. Une prédiction sur une valeur hors domaine ne doit pas être utilisée
+comme estimation opérationnelle.
+
+Docker installe désormais le package dans `site-packages`, sans conserver
+`/app/logiai`. La préparation et l’orchestration ci-dessous restent applicables.
+Voir [ADR 005](docs/adr/005-packaging.md), [l’étude de conception](docs/etude-de-conception.md)
+Le compte rendu de l’atelier 6 est livré séparément en PDF dans le dossier
+local `livrables` et n’est pas publié dans ce dépôt.
+
+## Pile Docker héritée de l’atelier 5
 
 Conteneurisation de l’API de prédiction des retards de livraison avec Docker,
 Nginx et Docker Compose. Projet réalisé par **Mehdi Chmiti et Ismail Haddaoui**,
@@ -13,7 +67,7 @@ Prérequis : Git et Docker Desktop démarré avec le moteur Linux. Python n’es
 nécessaire sur Windows pour cette procédure.
 
 ```powershell
-git clone --branch atelier5 https://github.com/mccrking/LogiAI.git
+git clone --branch tp6 https://github.com/mccrking/LogiAI.git
 cd LogiAI
 docker info
 Copy-Item .env.example .env
@@ -23,8 +77,8 @@ Remplacer les deux valeurs de `.env` par des clés différentes, longues et
 aléatoires : `LOGIAI_API_KEY` et `LOGIAI_ADMIN_KEY`. Ne jamais publier ce fichier.
 Sur le dossier déjà configuré, conserver le `.env` existant.
 
-Les données et le modèle sont exclus de Git. Après un nouveau clonage, les
-préparer explicitement avec le conteneur d’entraînement :
+Le modèle de démonstration est fourni dans Git ; le CSV reste généré localement.
+Pour préparer les données ou réentraîner explicitement le modèle :
 
 ```powershell
 .\scripts\prepare-model.ps1
@@ -153,12 +207,13 @@ service web pour que Nginx résolve à nouveau le nom `api`.
 
 ## Livrables
 
-- [Compte rendu de l’atelier 5](COMPTE_RENDU.md).
+- [Compte rendu de l’atelier 5](docs/COMPTE_RENDU_ATELIER5.md).
 - [Compte rendu de l’atelier 5 au format PDF](docs/Compte_rendu_Atelier_5_LogiAI.pdf).
 - [Décisions Docker](docs/adr/004-docker.md).
 - [Propositions de tickets de sortie](docs/TICKETS_SORTIE.md).
 - [Compte rendu conservé de l’atelier 4](docs/COMPTE_RENDU_ATELIER4.md).
 
 Le rendu passe par une pull request avec relecture réelle du binôme, puis fusion
-avec un commit de merge et création du tag `tp5`. Les clés et les artefacts
-entraînés restent exclus de Git.
+avec un commit de merge et création du tag prévu pour l’atelier. Les clés
+restent exclues de Git. Le wheel et le modèle de démonstration sont fournis
+séparément dans ce dépôt pour les essais du collègue.
