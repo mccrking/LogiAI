@@ -1,4 +1,39 @@
-# LogiAI — Atelier 5
+# LogiAI — Atelier 6
+
+## Package Python et commande
+
+Depuis la branche `tp6`, avec Python 3.12 pour reproduire l’environnement du modèle :
+
+```powershell
+python -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+.venv\Scripts\python.exe -m pip install -e ".[api,dev]"
+.venv\Scripts\python.exe -m pytest -q
+.venv\Scripts\python.exe -m build
+.venv\Scripts\logiai-predict.exe livraison.json
+```
+
+`dist/logiai-0.1.0-py3-none-any.whl` contient le code et la commande, sans modèle,
+données ni secrets. Pour l’installer ailleurs, utiliser un environnement neuf :
+
+```powershell
+python -m pip install -c CHEMIN/requirements-runtime.txt CHEMIN/dist/logiai-0.1.0-py3-none-any.whl
+$env:LOGIAI_HOME = 'CHEMIN/DU/PROJET'
+logiai-predict CHEMIN/DU/PROJET/livraison.json
+```
+
+La variable désigne le dossier contenant `models/` et `data/`. Sans variable,
+le dossier courant est utilisé. Le CLI appelle le modèle directement et ne
+contrôle pas les bornes métier de l’API : une pluie de 500 mm illustre cette
+différence. Une prédiction sur une valeur hors domaine ne doit pas être utilisée
+comme estimation opérationnelle.
+
+Docker installe désormais le package dans `site-packages`, sans conserver
+`/app/logiai`. La préparation et l’orchestration ci-dessous restent applicables.
+Voir [ADR 005](docs/adr/005-packaging.md), [l’étude de conception](docs/etude-de-conception.md)
+et [le compte rendu de l’atelier 6](COMPTE_RENDU.md).
+
+## Pile Docker héritée de l’atelier 5
 
 Conteneurisation de l’API de prédiction des retards de livraison avec Docker,
 Nginx et Docker Compose. Projet réalisé par **Mehdi Chmiti et Ismail Haddaoui**,
@@ -13,7 +48,7 @@ Prérequis : Git et Docker Desktop démarré avec le moteur Linux. Python n’es
 nécessaire sur Windows pour cette procédure.
 
 ```powershell
-git clone --branch atelier5 https://github.com/mccrking/LogiAI.git
+git clone --branch tp6 https://github.com/mccrking/LogiAI.git
 cd LogiAI
 docker info
 Copy-Item .env.example .env
@@ -153,7 +188,7 @@ service web pour que Nginx résolve à nouveau le nom `api`.
 
 ## Livrables
 
-- [Compte rendu de l’atelier 5](COMPTE_RENDU.md).
+- [Compte rendu de l’atelier 5](docs/COMPTE_RENDU_ATELIER5.md).
 - [Compte rendu de l’atelier 5 au format PDF](docs/Compte_rendu_Atelier_5_LogiAI.pdf).
 - [Décisions Docker](docs/adr/004-docker.md).
 - [Propositions de tickets de sortie](docs/TICKETS_SORTIE.md).

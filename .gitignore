@@ -8,3 +8,7 @@ __pycache__/
 !.env.example
 data/*.csv
 models/
+dist/
+build/
+*.egg-info/
+.venv_test/
